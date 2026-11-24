@@ -1,0 +1,69 @@
+alias: PixMob
+icon: mdi:led-strip-variant
+description: Comanda i braccialetti PixMob via IR (Broadlink)
+mode: single
+fields:
+  color:
+    name: Color
+    default: Red
+    required: true
+    selector:
+      select:
+        options:
+          - Red
+          - Orange
+          - Yellow
+          - Yellow-green
+          - Light green
+          - Green
+          - Turquoise
+          - Light blue
+          - Blue
+          - Magenta
+          - Pink
+          - Whitish
+  effect:
+    name: Effect
+    default: Flash
+    required: true
+    selector:
+      select:
+        options:
+          - Flash
+          - Fade in 2.4s
+          - In 480ms / out 960ms
+          - In 2.4s / out 960ms
+          - Fade out 3.84s
+          - In 2.4s / out 480ms
+          - In 480ms / out 480ms
+  repeats:
+    name: Repeats
+    default: 1
+    selector:
+      number:
+        min: 1
+        max: 10
+        mode: box
+sequence:
+  - action: remote.send_command
+    target:
+      entity_id: remote.YOUR_BROADLINK_REMOTE
+    data:
+      num_repeats: "{{ repeats | default(1) | int }}"
+      command: >-
+        {% set effects = ['Flash','Fade in 2.4s','In 480ms / out 960ms','In 2.4s / out 960ms','Fade out 3.84s','In 2.4s / out 480ms','In 480ms / out 480ms'] %}
+        {% set codes = {
+            'Red': ['b64:JgAYAC4uFxcXLhdcF1wXFxcXFy4uXC5cFwANBQAAAAA=', 'b64:JgAkAC4XLhcuFxdcF1wXFxcXFy4uXC5cF0UXFy4XF0UXXC5cFwANBQAAAAAAAAAA', 'b64:JgAmAC4XLhcuFxdcF1wXFxcXFy4uXC5cFy4XLi4XFxcXFxdcLlwXAA0FAAAAAAAA', 'b64:JgAmAC4uFxcXLhdcF1wXFxcXFy4uXC5cF0UXFy4XFxcXFxdcLlwXAA0FAAAAAAAA', 'b64:JgAkAC4uFxcXLhdcF1wXFxcXFy4uXC5cF1wuLhdFFxcXLi5cFwANBQAAAAAAAAAA', 'b64:JgAkAC4uFxcXLhdcF1wXFxcXFy4uXC5cF0UXFy4XFy4uXC5cFwANBQAAAAAAAAAA', 'b64:JgAkAC4uFxcXLhdcF1wXFxcXFy4uXC5cFy4XLi4XFy4uXC5cFwANBQAAAAAAAAAA'],
+            'Orange': ['b64:JgAaABcXFxcuLi5cF0UXFxcuFxcXLhdFLlwXAA0FAAA=', 'b64:JgAmABcXFxcuLi5cF0UXFxcuFxcXLhdFLlwXRRcXLhcXRRdcLlwXAA0FAAAAAAAA', 'b64:JgAoABcXFxcuLi5cF0UXFxcuFxcXLhdFLlwXLhcuLhcXFxcXF1wuXBcADQUAAAAA', 'b64:JgAoABcXFxcuLi5cF0UXFxcuFxcXLhdFLlwXRRcXLhcXFxcXF1wuXBcADQUAAAAA', 'b64:JgAmABcXFxcuLi5cF0UXFxcuFxcXLhdFLlwXXC4uF0UXFxcuLlwXAA0FAAAAAAAA', 'b64:JgAmABcXFxcuLi5cF0UXFxcuFxcXLhdFLlwXRRcXLhcXLi5cLlwXAA0FAAAAAAAA', 'b64:JgAmABcXFxcuLi5cF0UXFxcuFxcXLhdFLlwXLhcuLhcXLi5cLlwXAA0FAAAAAAAA'],
+            'Yellow': ['b64:JgAYAC4uFxcXFy5cF0UXFxcuFy4uXC5cFwANBQAAAAA=', 'b64:JgAkAC4uFxcXFy5cF0UXFxcuFy4uXC5cF0UXFy4XF0UXXC5cFwANBQAAAAAAAAAA', 'b64:JgAmAC4uFxcXFy5cF0UXFxcuFy4uXC5cFy4XLi4XFxcXFxdcLlwXAA0FAAAAAAAA', 'b64:JgAmAC4uFxcXFy5cF0UXFxcuFy4uXC5cF0UXFy4XFxcXFxdcLlwXAA0FAAAAAAAA', 'b64:JgAkAC4uFxcXFy5cF0UXFxcuFy4uXC5cF1wuLhdFFxcXLi5cFwANBQAAAAAAAAAA', 'b64:JgAkAC4uFxcXFy5cF0UXFxcuFy4uXC5cF0UXFy4XFy4uXC5cFwANBQAAAAAAAAAA', 'b64:JgAkAC4uFxcXFy5cF0UXFxcuFy4uXC5cFy4XLi4XFy4uXC5cFwANBQAAAAAAAAAA'],
+            'Yellow-green': ['b64:JgAaABcXFxcuLi5cF0UXFxcuFy4XFxdFLlwXAA0FAAA=', 'b64:JgAmABcXFxcuLi5cF0UXFxcuFy4XFxdFLlwXRRcXLhcXRRdcLlwXAA0FAAAAAAAA', 'b64:JgAoABcXFxcuLi5cF0UXFxcuFy4XFxdFLlwXLhcuLhcXFxcXF1wuXBcADQUAAAAA', 'b64:JgAoABcXFxcuLi5cF0UXFxcuFy4XFxdFLlwXRRcXLhcXFxcXF1wuXBcADQUAAAAA', 'b64:JgAmABcXFxcuLi5cF0UXFxcuFy4XFxdFLlwXXC4uF0UXFxcuLlwXAA0FAAAAAAAA', 'b64:JgAmABcXFxcuLi5cF0UXFxcuFy4XFxdFLlwXRRcXLhcXLi5cLlwXAA0FAAAAAAAA', 'b64:JgAmABcXFxcuLi5cF0UXFxcuFy4XFxdFLlwXLhcuLhcXLi5cLlwXAA0FAAAAAAAA'],
+            'Light green': ['b64:JgAcABcXFxcuLi5cFy4XLhcuFxcXLhdFFy4XLhcADQU=', 'b64:JgAoABcXFxcuLi5cFy4XLhcuFxcXLhdFFy4XLhdFFxcuFxdFF1wuXBcADQUAAAAA', 'b64:JgAqABcXFxcuLi5cFy4XLhcuFxcXLhdFFy4XLhcuFy4uFxcXFxcXXC5cFwANBQAA', 'b64:JgAqABcXFxcuLi5cFy4XLhcuFxcXLhdFFy4XLhdFFxcuFxcXFxcXXC5cFwANBQAA', 'b64:JgAoAC4XLhcuFxdcFy4XLhcuFxcXLhdFFy4XLhdcLi4XRRcXFy4uXBcADQUAAAAA', 'b64:JgAoAC4XLhcuFxdcFy4XLhcuFxcXLhdFFy4XLhdFFxcuFxcuLlwuXBcADQUAAAAA', 'b64:JgAoABcXFxcuLi5cFy4XLhcuFxcXLhdFFy4XLhcuFy4uFxcuLlwuXBcADQUAAAAA'],
+            'Green': ['b64:JgAYAC4uFxcXFy5cFy4XLhcuFy4uXC5cFwANBQAAAAA=', 'b64:JgAkAC4uFxcXFy5cFy4XLhcuFy4uXC5cF0UXFy4XF0UXXC5cFwANBQAAAAAAAAAA', 'b64:JgAmAC4uFxcXFy5cFy4XLhcuFy4uXC5cFy4XLi4XFxcXFxdcLlwXAA0FAAAAAAAA', 'b64:JgAmAC4uFxcXFy5cFy4XLhcuFy4uXC5cF0UXFy4XFxcXFxdcLlwXAA0FAAAAAAAA', 'b64:JgAkAC4uFxcXFy5cFy4XLhcuFy4uXC5cF1wuLhdFFxcXLi5cFwANBQAAAAAAAAAA', 'b64:JgAkAC4uFxcXFy5cFy4XLhcuFy4uXC5cF0UXFy4XFy4uXC5cFwANBQAAAAAAAAAA', 'b64:JgAkAC4uFxcXFy5cFy4XLhcuFy4uXC5cFy4XLi4XFy4uXC5cFwANBQAAAAAAAAAA'],
+            'Turquoise': ['b64:JgAaABcXFxcuLi5cFy4XFy4uFy4uXBcXF0UXAA0FAAA=', 'b64:JgAmABcXFxcuLi5cFy4XFy4uFy4uXBcXF0UXRRcXLhcXRRdcLlwXAA0FAAAAAAAA', 'b64:JgAoABcXFxcuLi5cFy4XFy4uFy4uXBcXF0UXLhcuLhcXFxcXF1wuXBcADQUAAAAA', 'b64:JgAoABcXFxcuLi5cFy4XFy4uFy4uXBcXF0UXRRcXLhcXFxcXF1wuXBcADQUAAAAA', 'b64:JgAmABcXFxcuLi5cFy4XFy4uFy4uXBcXF0UXXC4uF0UXFxcuLlwXAA0FAAAAAAAA', 'b64:JgAmABcXFxcuLi5cFy4XFy4uFy4uXBcXF0UXRRcXLhcXLi5cLlwXAA0FAAAAAAAA', 'b64:JgAmABcXFxcuLi5cFy4XFy4uFy4uXBcXF0UXLhcuLhcXLi5cLlwXAA0FAAAAAAAA'],
+            'Light blue': ['b64:JgAeABcXF0UuFxdcFy4XFxcuFxcXFxcXFxcuLhdFFwANBQAAAAAAAAAAAAAAAAAA', 'b64:JgAqABcXF0UuFxdcFy4XFxcuFxcXFxcXFxcuLhdFF0UXFy4XF0UXXC5cFwANBQAA', 'b64:JgAsABcXF0UuFxdcFy4XFxcuFxcXFxcXFxcuLhdFFy4XLi4XFxcXFxdcLlwXAA0F', 'b64:JgAsABcXF0UuFxdcFy4XFxcuFxcXFxcXFxcuLhdFF0UXFy4XFxcXFxdcLlwXAA0F', 'b64:JgAqABcXF0UuFxdcFy4XFxcuFxcXFxcXFxcuLhdFF1wuLhdFFxcXLi5cFwANBQAA', 'b64:JgAqABcXF0UuFxdcFy4XFxcuFxcXFxcXFxcuLhdFF0UXFy4XFy4uXC5cFwANBQAA', 'b64:JgAqABcXF0UuFxdcFy4XFxcuFxcXFxcXFxcuLhdFFy4XLi4XFy4uXC5cFwANBQAA'],
+            'Blue': ['b64:JgAeABcXF0UuFxdcFy4XFxcuLhcXLhcXFxcXFxdFFwANBQAAAAAAAAAAAAAAAAAA', 'b64:JgAqABcXF0UuFxdcFy4XFxcuLhcXLhcXFxcXFxdFF0UXFy4XF0UXXC5cFwANBQAA', 'b64:JgAsABcXF0UuFxdcFy4XFxcuLhcXLhcXFxcXFxdFFy4XLi4XFxcXFxdcLlwXAA0F', 'b64:JgAsABcXF0UuFxdcFy4XFxcuLhcXLhcXFxcXFxdFF0UXFy4XFxcXFxdcLlwXAA0F', 'b64:JgAqABcXF0UuFxdcFy4XFxcuLhcXLhcXFxcXFxdFF1wuLhdFFxcXLi5cFwANBQAA', 'b64:JgAqABcXF0UuFxdcFy4XFxcuLhcXLhcXFxcXFxdFF0UXFy4XFy4uXC5cFwANBQAA', 'b64:JgAqABcXF0UuFxdcFy4XFxcuLhcXLhcXFxcXFxdFFy4XLi4XFy4uXC5cFwANBQAA'],
+            'Magenta': ['b64:JgAaABcXFxcuLi5cF0UuRRcXFxcuRRcXF0UXAA0FAAA=', 'b64:JgAmABcXFxcuLi5cF0UuRRcXFxcuRRcXF0UXRRcXLhcXRRdcLlwXAA0FAAAAAAAA', 'b64:JgAoABcXFxcuLi5cF0UuRRcXFxcuRRcXF0UXLhcuLhcXFxcXF1wuXBcADQUAAAAA', 'b64:JgAoABcXFxcuLi5cF0UuRRcXFxcuRRcXF0UXRRcXLhcXFxcXF1wuXBcADQUAAAAA', 'b64:JgAmABcXFxcuLi5cF0UuRRcXFxcuRRcXF0UXXC4uF0UXFxcuLlwXAA0FAAAAAAAA', 'b64:JgAmABcXFxcuLi5cF0UuRRcXFxcuRRcXF0UXRRcXLhcXLi5cLlwXAA0FAAAAAAAA', 'b64:JgAmABcXFxcuLi5cF0UuRRcXFxcuRRcXF0UXLhcuLhcXLi5cLlwXAA0FAAAAAAAA'],
+            'Pink': ['b64:JgAaABcXF0UuFxdcFy4XFxdcLi4XRRcXF0UXAA0FAAA=', 'b64:JgAmABcXF0UuFxdcFy4XFxdcLi4XRRcXF0UXRRcXLhcXRRdcLlwXAA0FAAAAAAAA', 'b64:JgAoABcXF0UuFxdcFy4XFxdcLi4XRRcXF0UXLhcuLhcXFxcXF1wuXBcADQUAAAAA', 'b64:JgAoABcXF0UuFxdcFy4XFxdcLi4XRRcXF0UXRRcXLhcXFxcXF1wuXBcADQUAAAAA', 'b64:JgAmABcXF0UuFxdcFy4XFxdcLi4XRRcXF0UXXC4uF0UXFxcuLlwXAA0FAAAAAAAA', 'b64:JgAmABcXF0UuFxdcFy4XFxdcLi4XRRcXF0UXRRcXLhcXLi5cLlwXAA0FAAAAAAAA', 'b64:JgAmABcXF0UuFxdcFy4XFxdcLi4XRRcXF0UXLhcuLhcXLi5cLlwXAA0FAAAAAAAA'],
+            'Whitish': ['b64:JgAaABcXF0UuFxdcFy4XFxdcLi4XRRcuFy4XAA0FAAA=', 'b64:JgAmABcXF0UuFxdcFy4XFxdcLi4XRRcuFy4XRRcXLhcXRRdcLlwXAA0FAAAAAAAA', 'b64:JgAoABcXF0UuFxdcFy4XFxdcLi4XRRcuFy4XLhcuLhcXFxcXF1wuXBcADQUAAAAA', 'b64:JgAoABcXF0UuFxdcFy4XFxdcLi4XRRcuFy4XRRcXLhcXFxcXF1wuXBcADQUAAAAA', 'b64:JgAmAC5FFxcXFxdcFy4XFxdcLi4XRRcuFy4XXC4uF0UXFxcuLlwXAA0FAAAAAAAA', 'b64:JgAmAC5FFxcXFxdcFy4XFxdcLi4XRRcuFy4XRRcXLhcXLi5cLlwXAA0FAAAAAAAA', 'b64:JgAmABcXF0UuFxdcFy4XFxdcLi4XRRcuFy4XLhcuLhcXLi5cLlwXAA0FAAAAAAAA']
+        } %}
+        {{ codes[color][effects.index(effect)] }}

@@ -1,0 +1,147 @@
+alias: PixMob Custom
+icon: mdi:palette
+description: PixMob via IR (Broadlink) con colore RGB libero e tempi di fade a scelta
+mode: single
+fields:
+  mode:
+    name: Action
+    default: color
+    required: true
+    selector:
+      select:
+        options:
+          - label: Show color
+            value: color
+          - label: Reset (LEDs off, clear settings)
+            value: reset
+  color:
+    name: Color
+    default: [255, 0, 0]
+    selector:
+      color_rgb: {}
+  attack:
+    name: Fade in time
+    default: "0"
+    selector:
+      select:
+        options:
+          - label: "0 ms (instant)"
+            value: "0"
+          - label: "32 ms"
+            value: "1"
+          - label: "96 ms"
+            value: "2"
+          - label: "192 ms"
+            value: "3"
+          - label: "480 ms"
+            value: "4"
+          - label: "960 ms"
+            value: "5"
+          - label: "2.4 s"
+            value: "6"
+          - label: "3.84 s"
+            value: "7"
+  sustain:
+    name: Hold time
+    default: "2"
+    selector:
+      select:
+        options:
+          - label: "0 ms (instant)"
+            value: "0"
+          - label: "32 ms"
+            value: "1"
+          - label: "96 ms"
+            value: "2"
+          - label: "192 ms"
+            value: "3"
+          - label: "480 ms"
+            value: "4"
+          - label: "960 ms"
+            value: "5"
+          - label: "2.4 s"
+            value: "6"
+  release:
+    name: Fade out time
+    default: "1"
+    selector:
+      select:
+        options:
+          - label: "32 ms"
+            value: "1"
+          - label: "96 ms"
+            value: "2"
+          - label: "192 ms"
+            value: "3"
+          - label: "480 ms"
+            value: "4"
+          - label: "960 ms"
+            value: "5"
+          - label: "2.4 s"
+            value: "6"
+          - label: "3.84 s"
+            value: "7"
+  chance:
+    name: Chance to light up
+    default: "0"
+    selector:
+      select:
+        options:
+          - label: "100% (always)"
+            value: "0"
+          - label: "88%"
+            value: "1"
+          - label: "67%"
+            value: "2"
+          - label: "50%"
+            value: "3"
+          - label: "32%"
+            value: "4"
+          - label: "16%"
+            value: "5"
+          - label: "10%"
+            value: "6"
+          - label: "4%"
+            value: "7"
+  repeats:
+    name: Repeats
+    default: 1
+    selector:
+      number:
+        min: 1
+        max: 10
+        mode: box
+sequence:
+  - action: remote.send_command
+    target:
+      entity_id: remote.YOUR_BROADLINK_REMOTE
+    data:
+      num_repeats: "{{ repeats | default(1) | int }}"
+      command: |-
+        {%- set mode = mode | default('color') -%}
+        {%- if mode == 'reset' -%}
+        b64:JgAoAC4uLi4XFxcXFxcXLhdcFy4XXBcuF1wXLhdcF0UXFxcXFy4XXBcADQUAAAAA
+        {%- else -%}
+        {%- set tbl = [33,50,84,101,169,154,109,41,86,146,161,180,178,132,102,42,76,106,166,149,98,81,66,36,53,70,138,172,140,108,44,74,89,134,164,162,145,100,85,68,34,49,177,82,133,150,165,105,90,45,77,137,69,52,97,37,54,173,148,170,141,73,153,38] -%}
+        {%- set c = color | default([255, 0, 0]) -%}
+        {%- set b = [0, (c[1] | int) // 4, (c[0] | int) // 4, (c[2] | int) // 4, (attack | default(0) | int) * 8 + (chance | default(0) | int), (release | default(1) | int) * 8 + (sustain | default(2) | int), 0] -%}
+        {%- set ns = namespace(enc=[], sum=0, bits=[1], runs=[], cur=1, n=0, last=0, body=[], s='') -%}
+        {%- for v in b -%}{%- set e = tbl[v] -%}{%- set ns.enc = ns.enc + [e] -%}{%- set ns.sum = ns.sum + e -%}{%- endfor -%}
+        {%- set ck = tbl[(ns.sum % 256) // 4] -%}
+        {%- set pw = [1, 2, 4, 8, 16, 32, 64, 128] -%}
+        {%- for byte in [ck] + ns.enc -%}{%- for p in pw -%}{%- set ns.bits = ns.bits + [(byte // p) % 2] -%}{%- endfor -%}{%- endfor -%}
+        {%- for x in ns.bits -%}{%- if x == 1 -%}{%- set ns.last = loop.index0 -%}{%- endif -%}{%- endfor -%}
+        {%- for x in ns.bits -%}{%- if loop.index0 <= ns.last -%}{%- if x == ns.cur -%}{%- set ns.n = ns.n + 1 -%}{%- else -%}{%- set ns.runs = ns.runs + [ns.n] -%}{%- set ns.cur = x -%}{%- set ns.n = 1 -%}{%- endif -%}{%- endif -%}{%- endfor -%}
+        {%- set ns.runs = ns.runs + [ns.n] -%}
+        {%- for r in ns.runs -%}{%- set ns.body = ns.body + [r * 23] -%}{%- endfor -%}
+        {%- set ns.body = ns.body + [0, 13, 5] -%}
+        {%- set n = ns.body | length -%}
+        {%- set pkt = [38, 0, n % 256, n // 256] + ns.body -%}
+        {%- set pkt = pkt + [0] * ((16 - (pkt | length) % 16) % 16) -%}
+        {%- set alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/' -%}
+        {%- set L = pkt | length -%}
+        {%- for i in range(0, L - L % 3, 3) -%}{%- set v = pkt[i] * 65536 + pkt[i + 1] * 256 + pkt[i + 2] -%}{%- set ns.s = ns.s ~ alpha[v // 262144] ~ alpha[(v // 4096) % 64] ~ alpha[(v // 64) % 64] ~ alpha[v % 64] -%}{%- endfor -%}
+        {%- if L % 3 == 1 -%}{%- set v = pkt[L - 1] * 65536 -%}{%- set ns.s = ns.s ~ alpha[v // 262144] ~ alpha[(v // 4096) % 64] ~ '==' -%}
+        {%- elif L % 3 == 2 -%}{%- set v = pkt[L - 2] * 65536 + pkt[L - 1] * 256 -%}{%- set ns.s = ns.s ~ alpha[v // 262144] ~ alpha[(v // 4096) % 64] ~ alpha[(v // 64) % 64] ~ '=' -%}{%- endif -%}
+        b64:{{ ns.s }}
+        {%- endif -%}
