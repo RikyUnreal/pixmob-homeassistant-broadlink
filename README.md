@@ -79,4 +79,4 @@ I checked the template against a separate Python generator on 600 random inputs 
 
 ## License
 
-MIT. See the `LICENSE` file. The projects credited above have their own licenses.
+MIT. See the `LICENSE` file. Third party code and credits: see `THIRD_PARTY_NOTICES.md`.
