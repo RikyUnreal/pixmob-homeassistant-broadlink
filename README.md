@@ -79,4 +79,4 @@ I checked the template against a separate Python generator on 600 random inputs 
 
 ## License
 
-Choose one. The projects above are MIT licensed.
+MIT. See the `LICENSE` file. The projects credited above have their own licenses.
