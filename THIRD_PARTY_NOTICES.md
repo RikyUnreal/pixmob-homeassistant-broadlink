@@ -15,7 +15,8 @@ MIT License - Copyright (c) 2022 Dani Weidman
 
 https://github.com/jamesw343/PixMob_IR
 
-The protocol documentation (encoding table, checksum, fields) used by `pixmob_custom.yaml` comes from this repository. It is MIT licensed: see the LICENSE file in that repository for the full text and the copyright line.
+The protocol documentation (encoding table, checksum, fields) used by `pixmob_custom.yaml` comes from this repository. 
+MIT License - Copyright (c) 2024-2025 James Wang
 
 ## MIT License text
 
