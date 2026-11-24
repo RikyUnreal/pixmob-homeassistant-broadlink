@@ -1,4 +1,4 @@
-# PixMob IR wristbands from Home Assistant, using a Broadlink IR blaster
+# PixMob IR wristbands from Home Assistant, using a Broadlink IR blaster. Made with Claude.
 
 Control PixMob infrared wristbands at home with a Broadlink IR remote and two Home Assistant scripts. No Arduino and no Flipper Zero needed.
 
